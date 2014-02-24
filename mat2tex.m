@@ -1,4 +1,7 @@
 function mat2tex(A)
+% MAT2TEX  prints a table to LaTex format.
+%   MAT2TEX(A) prints the LaTex format of matrix A to the screen.
+
 
 [rows,cols] = size(A);
 
@@ -15,13 +18,15 @@ end
 
 %Internal function
 function printNumber(number,endline)
+    zero =false;
+    
 	%Compare vapriable type string
 	vartype = class(endline);
 	if(~strcmp(vartype,'logical'))
 		error('endline Variable must be boolean!');
 	end
 
-	%Compare number vapriable size
+	%Compare number variable size
 	[r,c]   = size(number);
 	if(r > 1 || c > 1)
 		error('number Variable must be number not a matrix!');
@@ -29,15 +34,33 @@ function printNumber(number,endline)
 
 	exponent = floor(log10(abs(number)));
 	mantissa = number/10^exponent;
+    
+    %Detect zero
+    if(abs(exponent) == Inf)
+        exponent = 2;
+        zero=true;
+    end
+    
+	
+	%Four cases. In matrix 0 or not
+	%            Endline   0 or not
 	if(~endline) %If not endline
 		if(abs(exponent)<=3)
-			fprintf(' $%.4f$ &',number);
+            if(zero)
+                fprintf(' $%d$ &',0);
+            else
+                fprintf(' $%.4f$ &',number);
+            end
 		else
 			fprintf(' $%.2f \\cdot 10^{%d}$ &',mantissa,exponent);
 		end
 	else %If in endline print latex array endline
 		if(abs(exponent)<=3)
-			fprintf(' $%.4f$ \\\\',number);
+            if(zero)
+                fprintf(' $%d$ \\\\',0);
+            else
+                fprintf(' $%.4f$ \\\\',number);
+            end
 		else
 			fprintf(' $%.2f \\cdot 10^{%d}$ \\\\',mantissa,exponent);
 		end
